@@ -200,6 +200,7 @@ table.hid-ps td.c-ps:not(.rev),table.hid-pp td.c-pp:not(.rev),table.hid-nl td.c-
   .brand small{display:none}
 }
 @media (max-width:360px){.seg,.opts{grid-template-columns:1fr}}
+.wbadge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:99px;background:var(--bad-bg);color:var(--bad);font:700 12px var(--f-body);font-style:normal}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -1100,24 +1101,29 @@ function home(){
 function cheatRows(){
   const q=cheat.q.trim().toLowerCase();
   const list=V.filter(function(v){
-    if(cheat.l!=='all'&&v.l!==cheat.l)return false;
+    if(cheat.l==='weak'&&!(weak[v.key]>0))return false;
+    if(cheat.l!=='all'&&cheat.l!=='weak'&&v.l!==cheat.l)return false;
     if(!q)return true;
     return (v.inf+' '+v.ps+' '+v.pp+' '+v.nl).toLowerCase().indexOf(q)>-1;
   });
   return {list:list,html:list.map(function(v){
-  return '<tr><td class="m c-inf spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+'</td></tr>';
+    const cnt=weak[v.key]||0;
+    const badge=cnt?'<span class="wbadge" title="Aantal keer fout gemaakt">'+cnt+'× fout</span>':'';
+    return '<tr><td class="m c-inf spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+badge+'</td></tr>';
   }).join('')};
 }
 function cheatView(){
   stopTimer();G=null;
+  const nw=weakVerbs().length;
+  if(cheat.l==='weak'&&!nw)cheat.l='all';
   const hid=function(k){return cheat.hide[k];};
   const chip=function(v,label){return '<button class="chip" data-act="cl" data-l="'+v+'" aria-pressed="'+(String(cheat.l)===String(v))+'">'+label+'</button>';};
   const hb=function(k,label){return '<button class="chip" data-act="hide" data-col="'+k+'" aria-pressed="'+hid(k)+'">'+label+'</button>';};
   app.innerHTML=top('<button class="btn outline" data-act="home">'+ICO.back+'<span>Terug</span></button>')+
   '<section><h1 style="font-size:clamp(30px,5vw,48px)">Spiekbriefje</h1>'+
-  '<p class="lead">Alle '+V.length+' onregelmatige werkwoorden op een rij. Wil je jezelf overhoren? Verberg een kolom en tik op een vakje om het antwoord te zien.</p>'+
+  '<p class="lead">Alle '+V.length+' onregelmatige werkwoorden op een rij. Wil je jezelf overhoren? Verberg een kolom en tik op een vakje om het antwoord te zien. Tik op het hele werkwoord in de eerste kolom om de uitspraak te horen.</p>'+
   '<div class="cs-tools"><label class="sr" for="q">Zoek een werkwoord</label><input id="q" class="search" type="search" placeholder="Zoek een werkwoord of Nederlands woord" autocomplete="off" value="'+esc(cheat.q)+'">'+
-  '<div class="chips">'+chip('all','Alles')+chip(1,'Lijst 1')+chip(2,'Lijst 2')+'</div></div>'+
+  '<div class="chips">'+chip('all','Alles')+chip(1,'Lijst 1')+chip(2,'Lijst 2')+(nw?chip('weak','Struikelblokken ('+nw+')'):'')+'</div></div>'+
   '<div class="cs-tools" style="margin-top:0"><span class="lab">Verberg</span><div class="chips">'+hb('ps','Past simple')+hb('pp','Voltooid deelwoord')+hb('nl','Vertaling')+'</div></div>'+
   '<p class="count" id="cnt"></p>'+
   '<div class="tblwrap"><table id="tbl"><thead><tr><th>Hele werkwoord</th><th>Past simple</th><th>Voltooid deelwoord</th><th>Vertaling</th></tr></thead><tbody id="tb"></tbody></table></div></section>';
@@ -1353,7 +1359,7 @@ app.addEventListener('click',function(e){
     return;
   }
   if(a==='opt')return answerSpeed(Number(t.dataset.i));
-  if(a==='cl'){cheat.l=t.dataset.l==='all'?'all':Number(t.dataset.l);return cheatView();}
+  if(a==='cl'){const l=t.dataset.l;cheat.l=(l==='all'||l==='weak')?l:Number(l);return cheatView();}
   if(a==='hide'){const k=t.dataset.col;cheat.hide[k]=!cheat.hide[k];t.setAttribute('aria-pressed',String(cheat.hide[k]));return fillCheat();}
   if(a==='rev'){t.classList.toggle('rev');return;}
   if(a==='spk'){speak(t.dataset.txt);return;}
