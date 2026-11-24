@@ -999,11 +999,17 @@ const ICO={
 
 /* ---------- State ---------- */
 let pool='all',hard=false,G=null,timer=null;
-let hi=loadHi();
+let hi=loadHi(),weak=loadWeak();
+function loadWeak(){try{return JSON.parse(localStorage.getItem('verbgym.weak')||'{}')||{};}catch(e){return {};}}
+function saveWeak(){try{localStorage.setItem('verbgym.weak',JSON.stringify(weak));}catch(e){}}
+const weakVerbs=function(){return V.filter(function(v){return weak[v.key]>0;});};
 const cheat={q:'',l:'all',hide:{ps:false,pp:false,nl:false}};
 function loadHi(){try{return JSON.parse(localStorage.getItem('verbgym.hi')||'{}')||{};}catch(e){return {};}}
 function saveHi(){try{localStorage.setItem('verbgym.hi',JSON.stringify(hi));}catch(e){}}
-const poolVerbs=function(){return V.filter(function(v){return pool==='all'||v.l===pool;});};
+const poolVerbs=function(){
+  if(pool==='weak'){const w=weakVerbs();return w.length?w:V;}
+  return V.filter(function(v){return pool==='all'||v.l===pool;});
+};
 function stopTimer(){if(timer){clearInterval(timer);timer=null;}}
 function speak(txt){
   if(!('speechSynthesis' in window))return;
@@ -1036,23 +1042,24 @@ function updateHud(){
   const p=$('#pStreak');if(p)p.classList.toggle('hot',G.streak>=3);
   if(G.mode!==3){const b=$('#bar');if(b){const done=G.i+(G.checked?1:0);b.style.width=(done/G.queue.length*100)+'%';}}
 }
-function award(){
+function award(v){
   G.streak++;G.best=Math.max(G.best,G.streak);
   G.score+=10+Math.min(G.streak-1,5)*2;G.correct++;
+  if(v&&weak[v.key]){weak[v.key]--;if(weak[v.key]<=0)delete weak[v.key];saveWeak();}
   updateHud();
   const p=$('#pStreak');if(p){p.classList.remove('bump');void p.offsetWidth;p.classList.add('bump');}
 }
-function miss(v){G.streak=0;if(v)G.missed.set(v.inf,v);updateHud();}
-function newG(mode,extra){
-  const g={mode:mode,score:0,streak:0,best:0,correct:0,total:0,missed:new Map(),checked:false,i:0,queue:[]};
-  for(const k in extra)g[k]=extra[k];
-  return g;
+function miss(v){
+  G.streak=0;
+  if(v){G.missed.set(v.inf,v);weak[v.key]=(weak[v.key]||0)+1;saveWeak();}
+  updateHud();
 }
 
 /* ---------- Home ---------- */
 function home(){
   stopTimer();G=null;
-  const n1=V.filter(function(v){return v.l===1;}).length,n2=V.length-n1;
+  const n1=V.filter(function(v){return v.l===1;}).length,n2=V.length-n1,nw=weakVerbs().length;
+  if(pool==='weak'&&!nw)pool='all';
   const rec=function(k){return hi[k]?'<span class="rec"><b>'+hi[k]+'</b> punten record</span>':'<span class="rec">Nog geen record</span>';};
   const chip=function(v,label){return '<button class="chip" data-act="pool" data-pool="'+v+'" aria-pressed="'+(String(pool)===String(v))+'">'+label+'</button>';};
   app.innerHTML=top('<button class="btn outline" data-act="cheat">'+ICO.book+'<span>Spiekbriefje<span class="hide-s"> / Lijst bekijken</span></span></button>')+
@@ -1064,7 +1071,9 @@ function home(){
   '<div class="lr"><span>to be</span><span>was / were</span><span>been</span></div>'+
   '<div class="lr"><span>to fly</span><span>flew</span><span>flown</span></div></aside></section>'+
   '<section class="poolrow"><span class="lab">Oefenen met</span><div class="chips">'+
-  chip('all','Alles ('+V.length+')')+chip(1,'Lijst 1 · be tot hit ('+n1+')')+chip(2,'Lijst 2 · hold tot write ('+n2+')')+'</div></section>'+
+  chip('all','Alles ('+V.length+')')+chip(1,'Lijst 1 · be tot hit ('+n1+')')+chip(2,'Lijst 2 · hold tot write ('+n2+')')+
+  (nw?chip('weak','Mijn struikelblokken ('+nw+')')+'<button class="btn ghost" style="min-height:36px;font-size:13px" data-act="clearweak" title="Wis struikelblokken">Wis</button>':'')+
+  '</div></section>'+
   '<section class="modes">'+
   '<article class="mode" style="--c:var(--m1)"><div class="ico">'+ICO.list+'</div><h2>Rijtjes stampen</h2>'+
   '<p>Je krijgt het Nederlands en de infinitive. Typ zelf de past simple en het voltooid deelwoord.</p>'+
@@ -1157,7 +1166,7 @@ function drillSubmit(){
     const a=$('#ans-'+k);a.hidden=false;a.className='ans '+(ok?'ok':'bad');
     a.innerHTML=ok?ICO.check+'<span>Goed</span>':ICO.x+'<span>'+esc(v[k])+'</span>';
     G.total++;
-    if(ok){award();}else{allOk=false;miss(v);}
+    if(ok){award(v);}else{allOk=false;miss(v);}
   });
   if(!allOk)G.missed.set(v.inf,v);
   $('#fb').innerHTML=(allOk?'<p class="msg-good">Top, helemaal goed.</p>':'<p class="note">Nog even oefenen. Zo hoort het rijtje:</p>')+
@@ -1211,7 +1220,7 @@ function ctxSubmit(){
     li(tOk,tOk?'Goede keuze: <b>'+LAB[q.t].toLowerCase()+'</b>.':'Dit was <b>'+LAB[q.t].toLowerCase()+'</b>.')+
     li(fOk,fOk?'Juiste vorm.':'Juiste vorm: <b>'+esc(ans)+'</b>.')+'</ul>'+
     '<p class="why">'+rule+'</p><p class="forms">'+esc(v.inf)+' · '+esc(v.ps)+' · '+esc(v.pp)+spkBtn(v)+'</p>';
-  if(tOk&&fOk){award();}else{miss(v);}
+  if(tOk&&fOk){award(v);}else{miss(v);}
   const go=$('#go');go.textContent=(G.i+1>=G.queue.length)?'Bekijk resultaat':'Volgende';go.focus();
   updateHud();
 }
@@ -1280,7 +1289,7 @@ function answerSpeed(i){
   const btns=$$('.opt');if(!btns[i])return;
   G.lock=true;G.total++;
   const ok=i===G.cur.ci;
-  if(ok){btns[i].classList.add('ok');award();}
+  if(ok){btns[i].classList.add('ok');award(G.cur.v);}
   else{btns[i].classList.add('bad');btns[G.cur.ci].classList.add('ok');miss(G.cur.v);}
   setTimeout(function(){if(G&&G.mode===3&&G.running)nextSpeed();},ok?220:900);
 }
@@ -1321,7 +1330,8 @@ app.addEventListener('click',function(e){
   const a=t.dataset.act;
   if(a==='home'||a==='stop')return home();
   if(a==='cheat')return cheatView();
-  if(a==='pool'){pool=t.dataset.pool==='all'?'all':Number(t.dataset.pool);return home();}
+  if(a==='pool'){const p=t.dataset.pool;pool=(p==='all'||p==='weak')?p:Number(p);return home();}
+  if(a==='clearweak'){weak={};saveWeak();pool='all';return home();}
   if(a==='start1')return startDrill(poolVerbs());
   if(a==='start2')return startCtx(poolVerbs());
   if(a==='start3')return speedIntro();
