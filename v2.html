@@ -55,10 +55,13 @@ button{font:inherit}
 .link{background:none;border:0;padding:0;font-weight:700;color:var(--m2);text-decoration:underline;cursor:pointer}
 
 /* speaker button */
-.spk{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;padding:0;border-radius:8px;border:1.5px solid var(--line);background:var(--surface);color:var(--m2);cursor:pointer;vertical-align:middle;margin-left:8px;transition:transform .1s,border-color .15s}
-.spk:hover{border-color:var(--m2)}
-.spk:active{transform:scale(.92)}
-.spk svg{width:16px;height:16px}
+.spk-word{cursor:pointer;text-decoration:underline dotted var(--line);text-underline-offset:4px;transition:color .15s,text-decoration-color .15s}
+.spk-word:hover{color:var(--m2);text-decoration-color:var(--m2)}
+.fb .forms{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.spk-pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:99px;border:1.5px solid var(--line);background:var(--surface);color:var(--m2);font:600 13px var(--f-body);cursor:pointer;flex:none;transition:transform .1s,border-color .15s}
+.spk-pill:hover{border-color:var(--m2)}
+.spk-pill:active{transform:scale(.96)}
+.spk-pill svg{width:15px;height:15px}
 
 /* home */
 .hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:36px;align-items:center;padding-block:10px 26px}
@@ -1013,7 +1016,7 @@ function speak(txt){
 }
 function spkBtn(v){
   const t=v.inf+', '+v.ps+', '+v.pp;
-  return '<button type="button" class="spk" data-act="spk" data-txt="'+esc(t)+'" aria-label="Luister naar uitspraak">'+ICO.vol+'</button>';
+  return '<button type="button" class="spk-pill" data-act="spk" data-txt="'+esc(t)+'">'+ICO.vol+'<span>Luister</span></button>';
 }
 
 /* ---------- Gedeelde onderdelen ---------- */
@@ -1089,7 +1092,7 @@ function cheatRows(){
     return (v.inf+' '+v.ps+' '+v.pp+' '+v.nl).toLowerCase().indexOf(q)>-1;
   });
   return {list:list,html:list.map(function(v){
-    return '<tr><td class="m c-inf">'+esc(v.inf)+spkBtn(v)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+'</td></tr>';
+  return '<tr><td class="m c-inf spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+'</td></tr>';
   }).join('')};
 }
 function cheatView(){
@@ -1296,7 +1299,7 @@ function showResult(){
   G.lastMissed=missed;
   const title=acc>=90?'Bijna foutloos.':acc>=70?'Goed bezig.':acc>=50?'Op de goede weg.':'Nog even blijven oefenen.';
   const c='var(--m'+G.mode+')';
-  const rows=missed.map(function(v){return '<tr><td class="m">'+esc(v.inf)+spkBtn(v)+'</td><td class="m">'+esc(v.ps)+'</td><td class="m">'+esc(v.pp)+'</td><td class="nl">'+esc(v.nl)+'</td></tr>';}).join('');
+  const rows=missed.map(function(v){return '<tr><td class="m spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m">'+esc(v.ps)+'</td><td class="m">'+esc(v.pp)+'</td><td class="nl">'+esc(v.nl)+'</td></tr>';}).join('');
   app.innerHTML='<div class="game" style="--c:'+c+'">'+top('')+
   '<section class="q" style="--c:'+c+'"><p class="kicker">'+NAMES[G.mode]+(G.mode===3?' · tijd om':' · klaar')+'</p>'+
   (rec?'<span class="badge">'+ICO.trophy+'Nieuw record</span>':'')+
