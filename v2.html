@@ -1054,7 +1054,11 @@ function miss(v){
   if(v){G.missed.set(v.inf,v);weak[v.key]=(weak[v.key]||0)+1;saveWeak();}
   updateHud();
 }
-
+function newG(mode,extra){
+  const g={mode:mode,score:0,streak:0,best:0,correct:0,total:0,missed:new Map(),checked:false,i:0,queue:[]};
+  for(const k in extra)g[k]=extra[k];
+  return g;
+}
 /* ---------- Home ---------- */
 function home(){
   stopTimer();G=null;
