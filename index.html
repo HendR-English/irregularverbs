@@ -203,6 +203,14 @@ table.hid-ps td.c-ps:not(.rev),table.hid-pp td.c-pp:not(.rev),table.hid-nl td.c-
 .wflag{display:inline-flex;align-items:center;vertical-align:middle;margin-left:8px;color:var(--hot);cursor:help}
 .wflag.high{color:var(--bad)}
 .wflag svg{width:17px;height:17px}
+.wflag{position:relative}
+.wflag:hover::after,.wflag:focus::after{
+  content:attr(data-tip);
+  position:absolute;bottom:130%;left:50%;transform:translateX(-50%);
+  background:var(--fg);color:var(--bg);font:600 12px var(--f-body);
+  padding:4px 9px;border-radius:8px;white-space:nowrap;pointer-events:none;z-index:10;
+  box-shadow:0 4px 12px rgba(0,0,0,.15)
+} 
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -1608,7 +1616,8 @@ function cheatRows(){
   });
     return {list:list,html:list.map(function(v){
     const cnt=weak[v.key]||0;
-    const badge=cnt?'<span class="wflag'+(cnt>=2?' high':'')+'" title="'+cnt+'× fout" aria-label="'+cnt+' keer fout">'+ICO.warn+'</span>':'';
+    const fouten=Math.ceil(cnt/3);
+    const badge=cnt?'<span class="wflag'+(fouten>=2?' high':'')+'" tabindex="0" data-tip="'+fouten+'× fout" aria-label="'+fouten+' keer fout">'+ICO.warn+'</span>':'';
     return '<tr><td class="m c-inf spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+badge+'</td></tr>';
   }).join('')};
 }
