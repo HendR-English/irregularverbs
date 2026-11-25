@@ -200,7 +200,9 @@ table.hid-ps td.c-ps:not(.rev),table.hid-pp td.c-pp:not(.rev),table.hid-nl td.c-
   .brand small{display:none}
 }
 @media (max-width:360px){.seg,.opts{grid-template-columns:1fr}}
-.wbadge{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:99px;background:var(--bad-bg);color:var(--bad);font:700 12px var(--f-body);font-style:normal}
+.wflag{display:inline-flex;align-items:center;vertical-align:middle;margin-left:8px;color:var(--hot);cursor:help}
+.wflag.high{color:var(--bad)}
+.wflag svg{width:17px;height:17px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
@@ -1487,6 +1489,9 @@ const ICO={
   book:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5a2 2 0 0 1 2-2h13v15H6a2 2 0 0 0-2 2z"/><path d="M4 20a2 2 0 0 0 2 2h13v-4"/></svg>',
   clock:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>',
   trophy:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v6a4 4 0 0 1-8 0z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 14v4M8 21h8"/></svg>',
+  vol:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
+  warn:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg>'
+};
   vol:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>'
 };
 
