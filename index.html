@@ -175,18 +175,29 @@ del{color:var(--bad);text-decoration-thickness:2px}
 .missed h3{font:700 16px var(--f-display);margin:26px 0 10px}
 
 /* cheat sheet */
-.cs-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:18px 0 14px}
-.search{flex:1 1 220px;max-width:340px;font:500 16px var(--f-body);padding:11px 14px;border-radius:12px;border:2px solid var(--line);background:var(--surface);color:var(--fg)}
+.cs-panel{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px 20px;margin:20px 0 14px;display:grid;gap:14px}
+.cs-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.search-wrap{position:relative;flex:1 1 240px;max-width:340px}
+.search-wrap svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;color:var(--muted);pointer-events:none}
+.search{width:100%;font:500 15px var(--f-body);padding:10px 14px 10px 38px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);transition:border-color .15s}
 .search:focus{outline:none;border-color:var(--m2)}
+.cs-bottom{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;padding-top:12px;border-top:1px solid var(--line)}
+.quiz-chip{display:inline-flex;align-items:center;gap:7px;padding:7px 14px;min-height:36px;border-radius:99px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);font:600 13.5px var(--f-body);cursor:pointer;transition:all .15s}
+.quiz-chip svg{width:16px;height:16px;color:var(--muted)}
+.quiz-chip:hover{border-color:var(--m2)}
+.quiz-chip[aria-pressed="true"]{background:var(--m2);color:var(--on-m);border-color:var(--m2)}
+.quiz-chip[aria-pressed="true"] svg{color:var(--on-m)}
 .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:16px;background:var(--surface)}
 table{width:100%;border-collapse:collapse;font-size:15px}
-th{background:var(--m1);color:var(--on-m);text-align:left;padding:12px 14px;font:700 13px var(--f-body);letter-spacing:.03em}
-td{padding:10px 14px;border-top:1px solid var(--line);vertical-align:top}
+th{position:sticky;top:0;z-index:2;background:var(--m1);color:var(--on-m);text-align:left;padding:12px 14px;font:700 13px var(--f-body);letter-spacing:.03em}
+th .th-in{display:inline-flex;align-items:center;gap:6px}
+th svg{width:15px;height:15px;opacity:.85}
+td{padding:11px 14px;border-top:1px solid var(--line);vertical-align:middle}
 tbody tr:nth-child(even){background:var(--surface2)}
 td.m{font-family:var(--f-mono)}
 td.nl{font-style:italic;color:var(--muted)}
 table.hid-ps td.c-ps:not(.rev),table.hid-pp td.c-pp:not(.rev),table.hid-nl td.c-nl:not(.rev){color:transparent;text-shadow:0 0 9px var(--fg);cursor:pointer;user-select:none}
-.count{color:var(--muted);font-size:14px;margin:0 0 10px}
+.count{color:var(--muted);font-size:13.5px;font-weight:500;margin:0 0 10px}
 .empty{padding:28px;text-align:center;color:var(--muted)}
 
 @media (max-width:860px){
@@ -198,19 +209,19 @@ table.hid-ps td.c-ps:not(.rev),table.hid-pp td.c-pp:not(.rev),table.hid-nl td.c-
   .ladder{display:none}
   th,td{padding:9px 8px;font-size:14px}
   .brand small{display:none}
+  .cs-panel{padding:14px}
 }
 @media (max-width:360px){.seg,.opts{grid-template-columns:1fr}}
-.wflag{display:inline-flex;align-items:center;vertical-align:middle;margin-left:8px;color:var(--hot);cursor:help}
+.wflag{position:relative;display:inline-flex;align-items:center;vertical-align:middle;margin-left:8px;color:var(--hot);cursor:help}
 .wflag.high{color:var(--bad)}
 .wflag svg{width:17px;height:17px}
-.wflag{position:relative}
 .wflag:hover::after,.wflag:focus::after{
   content:attr(data-tip);
-  position:absolute;bottom:130%;left:50%;transform:translateX(-50%);
+  position:absolute;bottom:135%;left:50%;transform:translateX(-50%);
   background:var(--fg);color:var(--bg);font:600 12px var(--f-body);
   padding:4px 9px;border-radius:8px;white-space:nowrap;pointer-events:none;z-index:10;
   box-shadow:0 4px 12px rgba(0,0,0,.15)
-} 
+}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
