@@ -1509,7 +1509,10 @@ const ICO={
   clock:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>',
   trophy:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v6a4 4 0 0 1-8 0z"/><path d="M8 6H4v2a4 4 0 0 0 4 4M16 6h4v2a4 4 0 0 1-4 4M12 14v4M8 21h8"/></svg>',
   vol:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>',
-  warn:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg>'
+  warn:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5h.01"/></svg>',
+  search:'<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>',
+  eye:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff:'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.94 17.94A10.9 10.9 0 0 1 12 19c-6.5 0-10-7-10-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.1 9.1 0 0 1 12 5c6.5 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19M14.12 14.12a3 3 0 1 1-4.24-4.24M3 3l18 18"/></svg>'
 };
 
 /* ---------- State ---------- */
@@ -1625,7 +1628,7 @@ function cheatRows(){
     if(!q)return true;
     return (v.inf+' '+v.ps+' '+v.pp+' '+v.nl).toLowerCase().indexOf(q)>-1;
   });
-    return {list:list,html:list.map(function(v){
+  return {list:list,html:list.map(function(v){
     const cnt=weak[v.key]||0;
     const fouten=Math.ceil(cnt/3);
     const badge=cnt?'<span class="wflag'+(fouten>=2?' high':'')+'" tabindex="0" data-tip="'+fouten+'× fout" aria-label="'+fouten+' keer fout">'+ICO.warn+'</span>':'';
@@ -1638,15 +1641,15 @@ function cheatView(){
   if(cheat.l==='weak'&&!nw)cheat.l='all';
   const hid=function(k){return cheat.hide[k];};
   const chip=function(v,label){return '<button class="chip" data-act="cl" data-l="'+v+'" aria-pressed="'+(String(cheat.l)===String(v))+'">'+label+'</button>';};
-  const hb=function(k,label){return '<button class="chip" data-act="hide" data-col="'+k+'" aria-pressed="'+hid(k)+'">'+label+'</button>';};
+  const hb=function(k,label){return '<button class="quiz-chip" data-act="hide" data-col="'+k+'" aria-pressed="'+hid(k)+'">'+(hid(k)?ICO.eyeOff:ICO.eye)+'<span>'+label+'</span></button>';};
   app.innerHTML=top('<button class="btn outline" data-act="home">'+ICO.back+'<span>Terug</span></button>')+
   '<section><h1 style="font-size:clamp(30px,5vw,48px)">Spiekbriefje</h1>'+
-  '<p class="lead">Alle '+V.length+' onregelmatige werkwoorden op een rij. Wil je jezelf overhoren? Verberg een kolom en tik op een vakje om het antwoord te zien. Tik op het hele werkwoord in de eerste kolom om de uitspraak te horen.</p>'+
-  '<div class="cs-tools"><label class="sr" for="q">Zoek een werkwoord</label><input id="q" class="search" type="search" placeholder="Zoek een werkwoord of Nederlands woord" autocomplete="off" value="'+esc(cheat.q)+'">'+
+  '<p class="lead">Alle '+V.length+' werkwoorden op een rij. Klik op een werkwoord voor de uitspraak, of verberg kolommen om jezelf te overhoren.</p>'+
+  '<div class="cs-panel"><div class="cs-top"><div class="search-wrap">'+ICO.search+'<label class="sr" for="q">Zoek een werkwoord</label><input id="q" class="search" type="search" placeholder="Zoek werkwoord of vertaling..." autocomplete="off" value="'+esc(cheat.q)+'"></div>'+
   '<div class="chips">'+chip('all','Alles')+chip('top','Meest gebruikt')+chip(1,'Lijst 1')+chip(2,'Lijst 2')+(nw?chip('weak','Nog oefenen ('+nw+')'):'')+'</div></div>'+
-  '<div class="cs-tools" style="margin-top:0"><span class="lab">Verberg</span><div class="chips">'+hb('ps','Past simple')+hb('pp','Voltooid deelwoord')+hb('nl','Vertaling')+'</div></div>'+
+  '<div class="cs-bottom"><span class="lab">Overhoor jezelf (verberg)</span><div class="chips" id="hchips">'+hb('ps','Past simple')+hb('pp','Voltooid deelwoord')+hb('nl','Vertaling')+'</div></div></div>'+
   '<p class="count" id="cnt"></p>'+
-  '<div class="tblwrap"><table id="tbl"><thead><tr><th>Hele werkwoord</th><th>Past simple</th><th>Voltooid deelwoord</th><th>Vertaling</th></tr></thead><tbody id="tb"></tbody></table></div></section>';
+  '<div class="tblwrap"><table id="tbl"><thead><tr><th><span class="th-in">'+ICO.vol+'Hele werkwoord</span></th><th>Past simple</th><th>Voltooid deelwoord</th><th>Vertaling</th></tr></thead><tbody id="tb"></tbody></table></div></section>';
   fillCheat();
   $('#q').addEventListener('input',function(e){cheat.q=e.target.value;fillCheat();});
 }
@@ -1655,7 +1658,11 @@ function fillCheat(){
   $('#tb').innerHTML=r.list.length?r.html:'<tr><td colspan="4" class="empty">Geen werkwoord gevonden.</td></tr>';
   $('#cnt').textContent=r.list.length+' werkwoorden';
   const t=$('#tbl');
-  ['ps','pp','nl'].forEach(function(k){t.classList.toggle('hid-'+k,cheat.hide[k]);});
+  ['ps','pp','nl'].forEach(function(k){
+    t.classList.toggle('hid-'+k,cheat.hide[k]);
+    const b=$('.quiz-chip[data-col="'+k+'"]');
+    if(b){const s=b.querySelector('svg');if(s)s.outerHTML=cheat.hide[k]?ICO.eyeOff:ICO.eye;}
+  });
 }
 
 /* ---------- Stand 1: rijtjes stampen ---------- */
