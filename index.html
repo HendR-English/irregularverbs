@@ -1553,7 +1553,7 @@ function award(v){
 }
 function miss(v){
   G.streak=0;
-  if(v){G.missed.set(v.inf,v);weak[v.key]=(weak[v.key]||0)+1;saveWeak();}
+  if(v){G.missed.set(v.inf,v);weak[v.key]=(weak[v.key]||0)+3;saveWeak();}
   updateHud();
 }
 function newG(mode,extra){
@@ -1608,9 +1608,9 @@ function cheatRows(){
     if(!q)return true;
     return (v.inf+' '+v.ps+' '+v.pp+' '+v.nl).toLowerCase().indexOf(q)>-1;
   });
-  return {list:list,html:list.map(function(v){
+    return {list:list,html:list.map(function(v){
     const cnt=weak[v.key]||0;
-    const badge=cnt?'<span class="wbadge" title="Aantal keer fout gemaakt">'+cnt+'× fout</span>':'';
+    const badge=cnt?'<span class="wflag'+(cnt>=2?' high':'')+'" title="'+cnt+'× fout" aria-label="'+cnt+' keer fout">'+ICO.warn+'</span>':'';
     return '<tr><td class="m c-inf spk-word" data-act="spk" data-txt="'+esc(v.inf+', '+v.ps+', '+v.pp)+'" title="Klik om te luisteren">'+esc(v.inf)+'</td><td class="m c-ps" data-act="rev">'+esc(v.ps)+'</td><td class="m c-pp" data-act="rev">'+esc(v.pp)+'</td><td class="nl c-nl" data-act="rev">'+esc(v.nl)+badge+'</td></tr>';
   }).join('')};
 }
@@ -1625,7 +1625,7 @@ function cheatView(){
   '<section><h1 style="font-size:clamp(30px,5vw,48px)">Spiekbriefje</h1>'+
   '<p class="lead">Alle '+V.length+' onregelmatige werkwoorden op een rij. Wil je jezelf overhoren? Verberg een kolom en tik op een vakje om het antwoord te zien. Tik op het hele werkwoord in de eerste kolom om de uitspraak te horen.</p>'+
   '<div class="cs-tools"><label class="sr" for="q">Zoek een werkwoord</label><input id="q" class="search" type="search" placeholder="Zoek een werkwoord of Nederlands woord" autocomplete="off" value="'+esc(cheat.q)+'">'+
-  '<div class="chips">'+chip('all','Alles')+chip('top','Meest gebruikt')+chip(1,'Lijst 1')+chip(2,'Lijst 2')+(nw?chip('weak','Struikelblokken ('+nw+')'):'')+'</div></div>'+
+  '<div class="chips">'+chip('all','Alles')+chip('top','Meest gebruikt')+chip(1,'Lijst 1')+chip(2,'Lijst 2')+(nw?chip('weak','Nog oefenen ('+nw+')'):'')+'</div></div>'+
   '<div class="cs-tools" style="margin-top:0"><span class="lab">Verberg</span><div class="chips">'+hb('ps','Past simple')+hb('pp','Voltooid deelwoord')+hb('nl','Vertaling')+'</div></div>'+
   '<p class="count" id="cnt"></p>'+
   '<div class="tblwrap"><table id="tbl"><thead><tr><th>Hele werkwoord</th><th>Past simple</th><th>Voltooid deelwoord</th><th>Vertaling</th></tr></thead><tbody id="tb"></tbody></table></div></section>';
